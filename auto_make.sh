@@ -11,7 +11,7 @@ echo "*Init Environment*"
 echo "******************"
 cd ..
 . build/envsetup.sh
-cd $1
+cd -
 pwd
 echo "******************"
 echo "*     Clean      *"
