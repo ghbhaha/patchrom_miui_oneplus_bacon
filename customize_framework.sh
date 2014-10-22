@@ -59,6 +59,8 @@ then
 
     cp -rf ../android/Editor/* $BUILD_OUT/framework/smali/android/widget/
     cp -rf overlay/framework/smali/* $BUILD_OUT/framework/smali
+    #fix wrong ids
+    sed -i -e 's/111003c/1110046/' $BUILD_OUT/framework/smali/android/net/sip/SipManager.smali
 fi
 
 if [ $2 = "$BUILD_OUT/framework2" ]
@@ -80,6 +82,10 @@ then
 	cd $BUILD_OUT
 	$GIT_APPLY camera_icon.patch
 	cd ..
+    #fix wrong ids
+    sed -i -e 's/1040452/1040530/' $BUILD_OUT/framework2/smali/com/android/internal/telephony/uicc/Injector\$UiccCardHook.smali
+    sed -i -e 's/1110042/111004c/' $BUILD_OUT/framework2/smali/com/google/android/mms/pdu/PduParser.smali
+    sed -i -e 's/10400af/104018c/' $BUILD_OUT/framework2/smali/com/google/android/mms/util/SqliteWrapper.smali
 fi
 
 if [ $2 = "$BUILD_OUT/telephony-common" ]
