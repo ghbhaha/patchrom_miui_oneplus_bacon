@@ -19,8 +19,8 @@ ro.product.board=MSM8974
 ro.product.cpu.abi=armeabi-v7a
 ro.product.cpu.abi2=armeabi
 ro.product.manufacturer=OnePlus
-ro.product.locale.language=en
-ro.product.locale.region=US
+ro.product.locale.language=zh
+ro.product.locale.region=CN
 ro.wifi.channels=
 ro.board.platform=msm8974
 # ro.build.product is obsolete; use ro.product.device
