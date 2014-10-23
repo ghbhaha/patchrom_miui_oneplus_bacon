@@ -20,7 +20,6 @@ echo 请耐心等候。。。
 cd ..
 . build/envsetup.sh 
 cd -
-make clean
 make fullota BUILD_NUMBER=$DATE
 mv  out/fullota.zip ./miui_"$MODEL"_suda_"$DATE"_"$RANDSRT"_4.4.4.zip
 if [ ! -d $OTAPATH ];
