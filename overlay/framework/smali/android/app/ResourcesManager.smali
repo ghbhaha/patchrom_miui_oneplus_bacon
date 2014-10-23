@@ -82,167 +82,227 @@
 .end method
 
 .method private attachCommonAssets(Landroid/content/res/AssetManager;Landroid/content/res/ThemeConfig;)Z
-    .locals 13
+    .locals 15
     .parameter "assets"
     .parameter "theme"
 
     .prologue
-    const/4 v8, 0x0
+    .line 627
+    invoke-virtual/range {p1 .. p1}, Landroid/content/res/AssetManager;->getBasePackageCount()I
 
-    .line 622
-    const/4 v1, 0x0
+    move-result v3
 
-    .line 624
-    .local v1, piTheme:Landroid/content/pm/PackageInfo;
-    :try_start_0
-    invoke-static {}, Landroid/app/ResourcesManager;->getPackageManager()Landroid/content/pm/IPackageManager;
+    .line 628
+    .local v3, count:I
+    const/4 v11, 0x1
 
-    move-result-object v9
+    if-le v3, v11, :cond_1
 
-    invoke-virtual {p2}, Landroid/content/res/ThemeConfig;->getOverlayPkgName()Ljava/lang/String;
+    .line 629
+    const/4 v11, 0x1
 
-    move-result-object v10
+    move-object/from16 v0, p1
 
-    const/4 v11, 0x0
-
-    invoke-static {}, Landroid/os/UserHandle;->getCallingUserId()I
-
-    move-result v12
-
-    invoke-interface {v9, v10, v11, v12}, Landroid/content/pm/IPackageManager;->getPackageInfo(Ljava/lang/String;II)Landroid/content/pm/PackageInfo;
-    :try_end_0
-    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0
+    invoke-virtual {v0, v11}, Landroid/content/res/AssetManager;->getBasePackageName(I)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 629
-    :goto_0
-    if-eqz v1, :cond_0
-
-    iget-object v9, v1, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
-
-    if-eqz v9, :cond_0
-
-    iget-boolean v9, v1, Landroid/content/pm/PackageInfo;->isLegacyThemeApk:Z
-
-    if-eqz v9, :cond_1
-
-    .line 649
-    :cond_0
-    :goto_1
-    return v8
-
-    .line 633
-    :cond_1
-    iget-object v8, v1, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
-
-    iget-object v8, v8, Landroid/content/pm/ApplicationInfo;->packageName:Ljava/lang/String;
-
-    invoke-static {v8}, Landroid/content/pm/ThemeUtils;->getCommonPackageName(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    .line 635
-    .local v6, themePackageName:Ljava/lang/String;
-    if-eqz v6, :cond_2
-
-    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
-
-    move-result v8
-
-    if-nez v8, :cond_2
-
     .line 636
-    iget-object v8, v1, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
-
-    iget-object v7, v8, Landroid/content/pm/ApplicationInfo;->publicSourceDir:Ljava/lang/String;
-
-    .line 637
-    .local v7, themePath:Ljava/lang/String;
-    const-string v2, "assets/overlays/common/"
+    .local v1, basePackageName:Ljava/lang/String;
+    :goto_0
+    const/4 v4, 0x0
 
     .line 638
-    .local v2, prefixPath:Ljava/lang/String;
-    const-string v8, "common"
+    .local v4, piTheme:Landroid/content/pm/PackageInfo;
+    :try_start_0
+    invoke-static {}, Landroid/app/ResourcesManager;->getPackageManager()Landroid/content/pm/IPackageManager;
 
-    invoke-static {v8, v1}, Landroid/content/pm/ThemeUtils;->getResDir(Ljava/lang/String;Landroid/content/pm/PackageInfo;)Ljava/lang/String;
+    move-result-object v11
+
+    move-object/from16 v0, p2
+
+    invoke-virtual {v0, v1}, Landroid/content/res/ThemeConfig;->getOverlayPkgNameForApp(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v12
+
+    const/4 v13, 0x0
+
+    invoke-static {}, Landroid/os/UserHandle;->getCallingUserId()I
+
+    move-result v14
+
+    invoke-interface {v11, v12, v13, v14}, Landroid/content/pm/IPackageManager;->getPackageInfo(Ljava/lang/String;II)Landroid/content/pm/PackageInfo;
+    :try_end_0
+    .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0
 
     move-result-object v4
 
-    .line 639
-    .local v4, resCachePath:Ljava/lang/String;
-    new-instance v8, Ljava/lang/StringBuilder;
-
-    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v8, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    const-string v9, "/resources.arsc"
-
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v5
-
-    .line 640
-    .local v5, resTablePath:Ljava/lang/String;
-    new-instance v8, Ljava/lang/StringBuilder;
-
-    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
-
-    invoke-virtual {v8, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    const-string v9, "/resources.apk"
-
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v3
-
-    .line 641
-    .local v3, resApkPath:Ljava/lang/String;
-    invoke-virtual {p1, v7, v5, v3, v2}, Landroid/content/res/AssetManager;->addCommonOverlayPath(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
-
-    move-result v0
-
-    .line 643
-    .local v0, cookie:I
-    if-eqz v0, :cond_2
-
     .line 644
-    invoke-virtual {p1, v0}, Landroid/content/res/AssetManager;->setCommonResCookie(I)V
+    :goto_1
+    if-eqz v4, :cond_0
+
+    iget-object v11, v4, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
+
+    if-eqz v11, :cond_0
+
+    iget-boolean v11, v4, Landroid/content/pm/PackageInfo;->isLegacyThemeApk:Z
+
+    if-eqz v11, :cond_3
 
     .line 645
-    invoke-virtual {p1, v6}, Landroid/content/res/AssetManager;->setCommonResPackageName(Ljava/lang/String;)V
+    :cond_0
+    const/4 v11, 0x0
 
-    .line 649
-    .end local v0           #cookie:I
-    .end local v2           #prefixPath:Ljava/lang/String;
-    .end local v3           #resApkPath:Ljava/lang/String;
-    .end local v4           #resCachePath:Ljava/lang/String;
-    .end local v5           #resTablePath:Ljava/lang/String;
-    .end local v7           #themePath:Ljava/lang/String;
+    .line 664
+    .end local v1           #basePackageName:Ljava/lang/String;
+    .end local v4           #piTheme:Landroid/content/pm/PackageInfo;
+    :goto_2
+    return v11
+
+    .line 630
+    :cond_1
+    const/4 v11, 0x1
+
+    if-ne v3, v11, :cond_2
+
+    .line 631
+    const/4 v11, 0x0
+
+    move-object/from16 v0, p1
+
+    invoke-virtual {v0, v11}, Landroid/content/res/AssetManager;->getBasePackageName(I)Ljava/lang/String;
+
+    move-result-object v1
+
+    .restart local v1       #basePackageName:Ljava/lang/String;
+    goto :goto_0
+
+    .line 633
+    .end local v1           #basePackageName:Ljava/lang/String;
     :cond_2
-    const/4 v8, 0x1
+    const/4 v11, 0x0
+
+    goto :goto_2
+
+    .line 648
+    .restart local v1       #basePackageName:Ljava/lang/String;
+    .restart local v4       #piTheme:Landroid/content/pm/PackageInfo;
+    :cond_3
+    iget-object v11, v4, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
+
+    iget-object v11, v11, Landroid/content/pm/ApplicationInfo;->packageName:Ljava/lang/String;
+
+    invoke-static {v11}, Landroid/content/pm/ThemeUtils;->getCommonPackageName(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v9
+
+    .line 650
+    .local v9, themePackageName:Ljava/lang/String;
+    if-eqz v9, :cond_4
+
+    invoke-virtual {v9}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v11
+
+    if-nez v11, :cond_4
+
+    .line 651
+    iget-object v11, v4, Landroid/content/pm/PackageInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
+
+    iget-object v10, v11, Landroid/content/pm/ApplicationInfo;->publicSourceDir:Ljava/lang/String;
+
+    .line 652
+    .local v10, themePath:Ljava/lang/String;
+    const-string v5, "assets/overlays/common/"
+
+    .line 653
+    .local v5, prefixPath:Ljava/lang/String;
+    const-string v11, "common"
+
+    invoke-static {v11, v4}, Landroid/content/pm/ThemeUtils;->getResDir(Ljava/lang/String;Landroid/content/pm/PackageInfo;)Ljava/lang/String;
+
+    move-result-object v7
+
+    .line 654
+    .local v7, resCachePath:Ljava/lang/String;
+    new-instance v11, Ljava/lang/StringBuilder;
+
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v11, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v11
+
+    const-string v12, "/resources.arsc"
+
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v11
+
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v8
+
+    .line 655
+    .local v8, resTablePath:Ljava/lang/String;
+    new-instance v11, Ljava/lang/StringBuilder;
+
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v11, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v11
+
+    const-string v12, "/resources.apk"
+
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v11
+
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v6
+
+    .line 656
+    .local v6, resApkPath:Ljava/lang/String;
+    move-object/from16 v0, p1
+
+    invoke-virtual {v0, v10, v8, v6, v5}, Landroid/content/res/AssetManager;->addCommonOverlayPath(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+
+    move-result v2
+
+    .line 658
+    .local v2, cookie:I
+    if-eqz v2, :cond_4
+
+    .line 659
+    move-object/from16 v0, p1
+
+    invoke-virtual {v0, v2}, Landroid/content/res/AssetManager;->setCommonResCookie(I)V
+
+    .line 660
+    move-object/from16 v0, p1
+
+    invoke-virtual {v0, v9}, Landroid/content/res/AssetManager;->setCommonResPackageName(Ljava/lang/String;)V
+
+    .line 664
+    .end local v2           #cookie:I
+    .end local v5           #prefixPath:Ljava/lang/String;
+    .end local v6           #resApkPath:Ljava/lang/String;
+    .end local v7           #resCachePath:Ljava/lang/String;
+    .end local v8           #resTablePath:Ljava/lang/String;
+    .end local v10           #themePath:Ljava/lang/String;
+    :cond_4
+    const/4 v11, 0x1
+
+    goto :goto_2
+
+    .line 641
+    .end local v9           #themePackageName:Ljava/lang/String;
+    :catch_0
+    move-exception v11
 
     goto :goto_1
-
-    .line 626
-    .end local v6           #themePackageName:Ljava/lang/String;
-    :catch_0
-    move-exception v9
-
-    goto :goto_0
 .end method
 
 .method private attachIconAssets(Landroid/content/res/AssetManager;Landroid/content/res/ThemeConfig;)Z
@@ -958,24 +1018,24 @@
 
     const/4 v6, 0x0
 
-    .line 653
+    .line 668
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getThemePackageName()Ljava/lang/String;
 
     move-result-object v4
 
-    .line 654
+    .line 669
     .local v4, themePackageName:Ljava/lang/String;
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getIconPackageName()Ljava/lang/String;
 
     move-result-object v2
 
-    .line 655
+    .line 670
     .local v2, iconPackageName:Ljava/lang/String;
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getCommonResPackageName()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 658
+    .line 673
     .local v0, commonResPackageName:Ljava/lang/String;
     invoke-static {v2}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
 
@@ -989,20 +1049,20 @@
 
     if-lez v5, :cond_0
 
-    .line 659
+    .line 674
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getIconPackCookie()I
 
     move-result v5
 
     invoke-virtual {p1, v2, v5}, Landroid/content/res/AssetManager;->removeOverlayPath(Ljava/lang/String;I)Z
 
-    .line 660
+    .line 675
     invoke-virtual {p1, v6}, Landroid/content/res/AssetManager;->setIconPackageName(Ljava/lang/String;)V
 
-    .line 661
+    .line 676
     invoke-virtual {p1, v7}, Landroid/content/res/AssetManager;->setIconPackCookie(I)V
 
-    .line 664
+    .line 679
     :cond_0
     invoke-static {v0}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
 
@@ -1016,26 +1076,26 @@
 
     if-lez v5, :cond_1
 
-    .line 665
+    .line 680
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getCommonResCookie()I
 
     move-result v5
 
     invoke-virtual {p1, v0, v5}, Landroid/content/res/AssetManager;->removeOverlayPath(Ljava/lang/String;I)Z
 
-    .line 666
+    .line 681
     invoke-virtual {p1, v6}, Landroid/content/res/AssetManager;->setCommonResPackageName(Ljava/lang/String;)V
 
-    .line 667
+    .line 682
     invoke-virtual {p1, v7}, Landroid/content/res/AssetManager;->setCommonResCookie(I)V
 
-    .line 669
+    .line 684
     :cond_1
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getThemeCookies()Ljava/util/ArrayList;
 
     move-result-object v3
 
-    .line 670
+    .line 685
     .local v3, themeCookies:Ljava/util/List;,"Ljava/util/List<Ljava/lang/Integer;>;"
     invoke-static {v4}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
 
@@ -1049,7 +1109,7 @@
 
     if-nez v5, :cond_2
 
-    .line 672
+    .line 687
     invoke-interface {v3}, Ljava/util/List;->size()I
 
     move-result v5
@@ -1060,7 +1120,7 @@
     :goto_0
     if-ltz v1, :cond_2
 
-    .line 673
+    .line 688
     invoke-interface {v3, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
     move-result-object v5
@@ -1073,12 +1133,12 @@
 
     invoke-virtual {p1, v4, v5}, Landroid/content/res/AssetManager;->removeOverlayPath(Ljava/lang/String;I)Z
 
-    .line 672
+    .line 687
     add-int/lit8 v1, v1, -0x1
 
     goto :goto_0
 
-    .line 676
+    .line 691
     .end local v1           #i:I
     :cond_2
     invoke-virtual {p1}, Landroid/content/res/AssetManager;->getThemeCookies()Ljava/util/ArrayList;
@@ -1087,10 +1147,10 @@
 
     invoke-virtual {v5}, Ljava/util/ArrayList;->clear()V
 
-    .line 677
+    .line 692
     invoke-virtual {p1, v6}, Landroid/content/res/AssetManager;->setThemePackageName(Ljava/lang/String;)V
 
-    .line 678
+    .line 693
     return-void
 .end method
 
@@ -2102,15 +2162,18 @@
     .parameter "context"
 
     .prologue
+    .line 168
     move-object/from16 v0, p6
 
     iget v6, v0, Landroid/content/res/CompatibilityInfo;->applicationScale:F
 
+    .line 169
     .local v6, scale:F
     move-object/from16 v0, p6
 
     iget-boolean v7, v0, Landroid/content/res/CompatibilityInfo;->isThemeable:Z
 
+    .line 170
     .local v7, isThemeable:Z
     new-instance v2, Landroid/content/res/ResourcesKey;
 
@@ -2124,9 +2187,11 @@
 
     invoke-direct/range {v2 .. v8}, Landroid/content/res/ResourcesKey;-><init>(Ljava/lang/String;ILandroid/content/res/Configuration;FZLandroid/os/IBinder;)V
 
+    .line 173
     .local v2, key:Landroid/content/res/ResourcesKey;
     monitor-enter p0
 
+    .line 178
     :try_start_0
     move-object/from16 v0, p0
 
@@ -2138,6 +2203,7 @@
 
     check-cast v18, Ljava/lang/ref/WeakReference;
 
+    .line 179
     .local v18, wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
     if-eqz v18, :cond_0
 
@@ -2149,6 +2215,7 @@
 
     move-object/from16 v17, v3
 
+    .line 181
     .local v17, r:Landroid/content/res/Resources;
     :goto_0
     if-eqz v17, :cond_1
@@ -2163,40 +2230,48 @@
 
     if-eqz v3, :cond_1
 
+    .line 186
     monitor-exit p0
 
     move-object/from16 v13, v17
 
+    .line 259
     :goto_1
     return-object v13
 
+    .line 179
     .end local v17           #r:Landroid/content/res/Resources;
     :cond_0
     const/16 v17, 0x0
 
     goto :goto_0
 
+    .line 188
     .restart local v17       #r:Landroid/content/res/Resources;
     :cond_1
     monitor-exit p0
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
+    .line 195
     new-instance v9, Landroid/content/res/AssetManager;
 
     invoke-direct {v9}, Landroid/content/res/AssetManager;-><init>()V
 
+    .line 196
     .local v9, assets:Landroid/content/res/AssetManager;
     move-object/from16 v0, p4
 
     invoke-virtual {v9, v0}, Landroid/content/res/AssetManager;->setAppName(Ljava/lang/String;)V
 
+    .line 197
     move-object/from16 v0, p6
 
     iget-boolean v3, v0, Landroid/content/res/CompatibilityInfo;->isThemeable:Z
 
     invoke-virtual {v9, v3}, Landroid/content/res/AssetManager;->setThemeSupport(Z)V
 
+    .line 198
     move-object/from16 v0, p1
 
     invoke-virtual {v9, v0}, Landroid/content/res/AssetManager;->addAssetPath(Ljava/lang/String;)I
@@ -2205,10 +2280,12 @@
 
     if-nez v3, :cond_2
 
+    .line 199
     const/4 v13, 0x0
 
     goto :goto_1
 
+    .line 188
     .end local v9           #assets:Landroid/content/res/AssetManager;
     .end local v17           #r:Landroid/content/res/Resources;
     .end local v18           #wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
@@ -2222,6 +2299,7 @@
 
     throw v3
 
+    .line 203
     .restart local v9       #assets:Landroid/content/res/AssetManager;
     .restart local v17       #r:Landroid/content/res/Resources;
     .restart local v18       #wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
@@ -2234,22 +2312,26 @@
 
     move-result-object v11
 
+    .line 205
     .local v11, dm:Landroid/util/DisplayMetrics;
     if-nez p3, :cond_9
 
     const/16 v16, 0x1
 
+    .line 206
     .local v16, isDefaultDisplay:Z
     :goto_2
     invoke-virtual {v2}, Landroid/content/res/ResourcesKey;->hasOverrideConfiguration()Z
 
     move-result v14
 
+    .line 207
     .local v14, hasOverrideConfig:Z
     if-eqz v16, :cond_3
 
     if-eqz v14, :cond_a
 
+    .line 208
     :cond_3
     new-instance v10, Landroid/content/res/Configuration;
 
@@ -2259,24 +2341,30 @@
 
     invoke-direct {v10, v3}, Landroid/content/res/Configuration;-><init>(Landroid/content/res/Configuration;)V
 
+    .line 209
     .local v10, config:Landroid/content/res/Configuration;
     if-nez v16, :cond_4
 
+    .line 210
     move-object/from16 v0, p0
 
     invoke-virtual {v0, v11, v10}, Landroid/app/ResourcesManager;->applyNonDefaultDisplayMetricsToConfigurationLocked(Landroid/util/DisplayMetrics;Landroid/content/res/Configuration;)V
 
+    .line 212
     :cond_4
     if-eqz v14, :cond_5
 
+    .line 213
     iget-object v3, v2, Landroid/content/res/ResourcesKey;->mOverrideConfiguration:Landroid/content/res/Configuration;
 
     invoke-virtual {v10, v3}, Landroid/content/res/Configuration;->updateFrom(Landroid/content/res/Configuration;)I
 
+    .line 219
     :cond_5
     :goto_3
     const/4 v15, 0x0
 
+    .line 221
     .local v15, iconsAttached:Z
     move-object/from16 v0, p6
 
@@ -2296,10 +2384,12 @@
 
     if-nez v3, :cond_7
 
+    .line 222
     iget-object v3, v10, Landroid/content/res/Configuration;->themeConfig:Landroid/content/res/ThemeConfig;
 
     if-nez v3, :cond_6
 
+    .line 224
     :try_start_2
     invoke-virtual/range {p8 .. p8}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
 
@@ -2313,24 +2403,28 @@
     :try_end_2
     .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_2} :catch_0
 
+    .line 231
     :cond_6
     :goto_4
     iget-object v3, v10, Landroid/content/res/Configuration;->themeConfig:Landroid/content/res/ThemeConfig;
 
     if-eqz v3, :cond_7
 
+    .line 232
     iget-object v3, v10, Landroid/content/res/Configuration;->themeConfig:Landroid/content/res/ThemeConfig;
 
     move-object/from16 v0, p0
 
     invoke-direct {v0, v9, v3}, Landroid/app/ResourcesManager;->attachThemeAssets(Landroid/content/res/AssetManager;Landroid/content/res/ThemeConfig;)Z
 
+    .line 233
     iget-object v3, v10, Landroid/content/res/Configuration;->themeConfig:Landroid/content/res/ThemeConfig;
 
     move-object/from16 v0, p0
 
     invoke-direct {v0, v9, v3}, Landroid/app/ResourcesManager;->attachCommonAssets(Landroid/content/res/AssetManager;Landroid/content/res/ThemeConfig;)Z
 
+    .line 234
     iget-object v3, v10, Landroid/content/res/Configuration;->themeConfig:Landroid/content/res/ThemeConfig;
 
     move-object/from16 v0, p0
@@ -2339,6 +2433,7 @@
 
     move-result v15
 
+    .line 238
     :cond_7
     move-object/from16 v0, p6
 
@@ -2348,6 +2443,7 @@
 
     move-result-object v17
 
+    .line 239
     if-eqz v15, :cond_8
 
     move-object/from16 v0, p0
@@ -2356,9 +2452,11 @@
 
     invoke-direct {v0, v1}, Landroid/app/ResourcesManager;->setActivityIcons(Landroid/content/res/Resources;)V
 
+    .line 247
     :cond_8
     monitor-enter p0
 
+    .line 248
     :try_start_3
     move-object/from16 v0, p0
 
@@ -2371,6 +2469,7 @@
     .end local v18           #wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
     check-cast v18, Ljava/lang/ref/WeakReference;
 
+    .line 249
     .restart local v18       #wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
     if-eqz v18, :cond_b
 
@@ -2382,6 +2481,7 @@
 
     move-object v13, v3
 
+    .line 250
     .local v13, existing:Landroid/content/res/Resources;
     :goto_5
     if-eqz v13, :cond_c
@@ -2396,16 +2496,19 @@
 
     if-eqz v3, :cond_c
 
+    .line 253
     invoke-virtual/range {v17 .. v17}, Landroid/content/res/Resources;->getAssets()Landroid/content/res/AssetManager;
 
     move-result-object v3
 
     invoke-virtual {v3}, Landroid/content/res/AssetManager;->close()V
 
+    .line 254
     monitor-exit p0
 
     goto/16 :goto_1
 
+    .line 260
     .end local v13           #existing:Landroid/content/res/Resources;
     .end local v18           #wr:Ljava/lang/ref/WeakReference;,"Ljava/lang/ref/WeakReference<Landroid/content/res/Resources;>;"
     :catchall_1
@@ -2437,10 +2540,12 @@
     .restart local v10       #config:Landroid/content/res/Configuration;
     goto/16 :goto_3
 
+    .line 225
     .restart local v15       #iconsAttached:Z
     :catch_0
     move-exception v12
 
+    .line 226
     .local v12, e:Ljava/lang/Exception;
     const-string v3, "ResourcesManager"
 
@@ -2448,6 +2553,7 @@
 
     invoke-static {v3, v4, v12}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
+    .line 227
     invoke-static {}, Landroid/content/res/ThemeConfig;->getSystemTheme()Landroid/content/res/ThemeConfig;
 
     move-result-object v3
@@ -2456,12 +2562,14 @@
 
     goto :goto_4
 
+    .line 249
     .end local v12           #e:Ljava/lang/Exception;
     :cond_b
     const/4 v13, 0x0
 
     goto :goto_5
 
+    .line 258
     .restart local v13       #existing:Landroid/content/res/Resources;
     :cond_c
     :try_start_4
@@ -2477,6 +2585,7 @@
 
     invoke-virtual {v3, v2, v4}, Landroid/util/ArrayMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
+    .line 259
     monitor-exit p0
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_1
