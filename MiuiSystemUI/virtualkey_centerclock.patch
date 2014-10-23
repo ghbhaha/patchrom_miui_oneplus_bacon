@@ -1,0 +1,422 @@
+From 7c277d104008a08653415341e8909a72be779299 Mon Sep 17 00:00:00 2001
+From: X-s <xsmumu@gmail.com>
+Date: Wed, 22 Oct 2014 18:40:48 +0800
+Subject: [PATCH] 2
+
+---
+ .../res/layout/status_bar_centerclock.xml          |  43 ++++++++
+ .../res/layout/status_bar_simple_centerclock.xml   |  26 +++++
+ .../res/layout/super_status_bar_centerclock.xml    |   8 ++
+ MiuiSystemUI/res/values-zh-rCN/strings.xml     |   2 +
+ MiuiSystemUI/res/values-zh-rTW/strings.xml     |   2 +
+ MiuiSystemUI/res/values/strings.xml            |   4 +-
+ MiuiSystemUI/res/xml/style_settings.xml        |   3 +
+ .../android/systemui/settings/StyleSettings.smali  | 120 ++++++++++++++++++++-
+ .../systemui/statusbar/phone/PhoneStatusBar.smali  |  79 +++++++++++++-
+ 10 files changed, 286 insertions(+), 6 deletions(-)
+ create mode 100644 MiuiSystemUI/res/layout/status_bar_centerclock.xml
+ create mode 100644 MiuiSystemUI/res/layout/status_bar_simple_centerclock.xml
+ create mode 100644 MiuiSystemUI/res/layout/super_status_bar_centerclock.xml
+
+--- a/MiuiSystemUI/res/layout/status_bar_centerclock.xml
++++ b/MiuiSystemUI/res/layout/status_bar_centerclock.xml
+@@ -0,0 +1,43 @@
++<?xml version="1.0" encoding="utf-8"?>
++<com.android.systemui.statusbar.phone.PhoneStatusBarView android:id="@id/status_bar" android:background="@drawable/status_bar_background" android:focusable="true" android:fitsSystemWindows="true" android:descendantFocusability="afterDescendants"
++  xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui">
++    <FrameLayout android:id="@id/oldman_std_status_wrapper" android:layout_width="fill_parent" android:layout_height="fill_parent">
++        <com.android.systemui.TorchServiceView android:layout_gravity="top|left|center" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:foreground="#ff000000" />
++        <include layout="@layout/status_bar_simple_centerclock" />
++        <com.android.systemui.statusbar.policy.KeyButtonView android:layout_gravity="left" android:id="@id/home" android:layout_width="40.0dip" android:layout_height="fill_parent" android:src="#00000000" android:layout_alignRight="@id/recent_apps" android:contentDescription="@string/accessibility_back" systemui:keyCode="3" systemui:keyRepeat="false" />
++        <com.android.systemui.statusbar.policy.KeyButtonView android:layout_gravity="right" android:id="@id/home" android:layout_width="40.0dip" android:layout_height="fill_parent" android:src="#00000000" android:layout_alignLeft="@id/recent_apps" android:layout_alignParentLeft="true" android:contentDescription="@string/status_bar_toggle_lock" systemui:keyCode="26" systemui:keyRepeat="false" />
++        <LinearLayout android:orientation="horizontal" android:id="@id/ticker" android:paddingLeft="6.0dip" android:animationCache="false" android:layout_width="fill_parent" android:layout_height="fill_parent">
++            <ImageSwitcher android:id="@id/tickerIcon" android:layout_width="@dimen/status_bar_icon_size" android:layout_height="@dimen/status_bar_icon_size" android:layout_marginRight="4.0dip">
++                <com.android.systemui.statusbar.AnimatedImageView android:layout_width="@dimen/status_bar_icon_size" android:layout_height="@dimen/status_bar_icon_size" android:scaleType="centerInside" />
++                <com.android.systemui.statusbar.AnimatedImageView android:layout_width="@dimen/status_bar_icon_size" android:layout_height="@dimen/status_bar_icon_size" android:scaleType="centerInside" />
++            </ImageSwitcher>
++            <com.android.systemui.statusbar.phone.TickerView android:id="@id/tickerText" android:paddingTop="2.0dip" android:paddingRight="10.0dip" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0">
++                <TextView android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:layout_width="fill_parent" android:layout_height="wrap_content" android:singleLine="true" />
++                <TextView android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:layout_width="fill_parent" android:layout_height="wrap_content" android:singleLine="true" />
++            </com.android.systemui.statusbar.phone.TickerView>
++        </LinearLayout>
++        <LinearLayout android:gravity="center" android:id="@id/returnToDriveModeScreen" android:background="@drawable/status_bar_orange_bar_bg" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
++            <ImageView android:id="@id/driveModeIcon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3.0dip" android:src="@drawable/status_bar_drive_mode_icon" />
++            <TextView android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:text="@string/drive_mode_tip" android:singleLine="true" android:layout_weight="1.0" />
++            <com.android.systemui.statusbar.policy.Clock android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:gravity="left|center" android:paddingRight="3.0dip" android:layout_width="wrap_content" android:layout_height="fill_parent" android:singleLine="true" />
++        </LinearLayout>
++        <LinearLayout android:gravity="center" android:id="@id/returnToRecorderScreen" android:background="@drawable/status_bar_red_bar_bg" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
++            <ImageView android:id="@id/recorderIcon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/status_bar_recorder_icon" />
++            <TextView android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:id="@id/recorderTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:singleLine="true" android:layout_weight="1.0" />
++            <Chronometer android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:id="@id/recorderTimer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="46.0dip" android:singleLine="true" />
++            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="fill_parent">
++                <include android:id="@id/recorder_signal_cluster" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/signal_cluster_view" />
++                <include android:id="@id/recorder_signal_cluster2" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/signal_cluster_view" />
++                <com.android.systemui.statusbar.phone.BatteryStatusIconView android:id="@id/recorder_battery" android:layout_width="wrap_content" android:layout_height="wrap_content" />
++            </LinearLayout>
++        </LinearLayout>
++        <LinearLayout android:gravity="center" android:id="@id/returnToIncallScreen" android:background="@drawable/status_bar_green_bar_bg" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
++            <ImageView android:id="@id/callStateIcon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/status_bar_ic_return_to_incall_screen_normal" />
++            <TextView android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:text="@string/return_to_incall_screen" android:singleLine="true" android:layout_weight="1.0" />
++            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/callIcons" android:layout_width="wrap_content" android:layout_height="fill_parent" />
++            <Chronometer android:textAppearance="@style/TextAppearance.StatusBar.PhoneTicker" android:id="@id/callTimer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:singleLine="true" />
++        </LinearLayout>
++    </FrameLayout>
++    <ViewStub android:id="@id/oldman_status_pane_stub" android:layout="@layout/oldman_status_pane" android:inflatedId="@id/oldman_status_pane" android:layout_width="fill_parent" android:layout_height="fill_parent" />
++</com.android.systemui.statusbar.phone.PhoneStatusBarView>
+\ No newline at end of file
+--- a/MiuiSystemUI/res/layout/status_bar_simple_centerclock.xml
++++ b/MiuiSystemUI/res/layout/status_bar_simple_centerclock.xml
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<com.android.systemui.statusbar.phone.SimpleStatusBar android:gravity="center_vertical" android:id="@id/status_bar_simple" android:layout_width="fill_parent" android:layout_height="@miui:dimen/android_status_bar_height"
++  xmlns:android="http://schemas.android.com/apk/res/android">
++    <com.android.systemui.statusbar.phone.BatteryIndicator android:layout_gravity="top" android:id="@id/battery_indicator" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/battery_indicator" android:scaleType="fitXY" />
++    <com.android.systemui.statusbar.phone.BatteryIndicatorCharging android:layout_gravity="top|right|center" android:id="@id/battery_indicator_charging" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/battery_indicator_charging" />
++    <ImageView android:id="@id/notification_lights_out" android:paddingLeft="6.0dip" android:paddingBottom="2.0dip" android:visibility="gone" android:layout_width="@dimen/status_bar_icon_size" android:layout_height="fill_parent" android:src="@drawable/ic_sysbar_lights_out_dot_small" android:scaleType="center" />
++    <LinearLayout android:orientation="horizontal" android:id="@id/icons" android:paddingLeft="6.0dip" android:paddingRight="6.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
++        <LinearLayout android:gravity="left" android:paddingRight="6.0dip" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
++            <TextView android:textAppearance="@style/TextAppearance.StatusBar.Carrier" android:gravity="left|center" android:id="@id/carrier" android:layout_width="wrap_content" android:layout_height="fill_parent" android:singleLine="true" />
++            <LinearLayout android:id="@id/notification_icon_area" android:layout_width="wrap_content" android:layout_height="fill_parent">
++                <com.android.systemui.statusbar.StatusBarIconView android:id="@id/moreIcon" android:visibility="gone" android:layout_width="@dimen/status_bar_icon_size" android:layout_height="fill_parent" android:src="@drawable/stat_notify_more" />
++                <com.android.systemui.statusbar.phone.IconMerger android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/notificationIcons" android:layout_width="wrap_content" android:layout_height="fill_parent" />
++            </LinearLayout>
++        </LinearLayout>
++        <com.android.systemui.statusbar.policy.Clock android:textAppearance="@style/TextAppearance.StatusBar.Clock" android:gravity="center" android:id="@id/clock" android:paddingTop="1.0dip" android:layout_width="wrap_content" android:layout_height="fill_parent" android:singleLine="true" />
++        <LinearLayout android:gravity="right" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
++            <com.android.systemui.statusbar.NetworkSpeedView android:textAppearance="@style/TextAppearance.StatusBar.Clock" android:gravity="right|center" android:id="@id/network_speed_view" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginRight="4.0dip" android:singleLine="true" />
++            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/statusIcons" android:layout_width="wrap_content" android:layout_height="fill_parent" />
++            <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@id/signal_cluster_container" android:layout_width="wrap_content" android:layout_height="fill_parent">
++                <include android:id="@id/signal_cluster" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/signal_cluster_view" />
++                <include android:id="@id/signal_cluster2" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/signal_cluster_view" />
++            </LinearLayout>
++            <com.android.systemui.statusbar.phone.BatteryStatusIconView android:id="@id/battery" android:layout_width="wrap_content" android:layout_height="wrap_content" />
++        </LinearLayout>
++    </LinearLayout>
++</com.android.systemui.statusbar.phone.SimpleStatusBar>
+\ No newline at end of file
+--- a/MiuiSystemUI/res/layout/super_status_bar_centerclock.xml
++++ b/MiuiSystemUI/res/layout/super_status_bar_centerclock.xml
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="utf-8"?>
++<com.android.systemui.statusbar.phone.StatusBarWindowView android:background="@*android:color/transparent" android:focusable="true" android:fitsSystemWindows="true" android:descendantFocusability="afterDescendants"
++  xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui">
++    <View android:id="@id/status_bar_scrim" android:layout_width="fill_parent" android:layout_height="fill_parent" />
++    <include android:layout_width="fill_parent" android:layout_height="@miui:dimen/android_status_bar_height" layout="@layout/status_bar_centerclock" />
++    <include android:layout_width="fill_parent" android:layout_height="0.0dip" layout="@layout/status_bar_expanded" />
++</com.android.systemui.statusbar.phone.StatusBarWindowView>
+\ No newline at end of file
+--- a/MiuiSystemUI/res/values-zh-rCN/strings.xml
++++ b/MiuiSystemUI/res/values-zh-rCN/strings.xml
+@@ -293,4 +293,7 @@
+     <string name="screen_rotation_freeze_message">锁定屏幕为横屏模式</string>
+     <string name="screen_button_disabled_message">手机屏幕下方按键功能已停用，可通过“桌面键+电源键”恢复。</string>
+     <string name="screen_button_enabled_message">手机屏幕下方按键功能已恢复</string>
++    <string name="settings_statusbar_style">状态栏风格设置</string>
++    <string name="center_clock_title">时间居中显示</string>
++    <string name="center_clock_title_summary">开启后点击状态栏左上角返回主页，右上角锁屏</string>
+ </resources>
+--- a/MiuiSystemUI/res/values-zh-rTW/strings.xml
++++ b/MiuiSystemUI/res/values-zh-rTW/strings.xml
+@@ -35,4 +35,7 @@
+     <string name="screen_rotation_freeze_message">鎖定螢幕為橫向模式</string>
+     <string name="screen_button_disabled_message">手機螢幕下方按鍵功能已停用，可通過「桌面鍵+電源鍵」恢復。</string>
+     <string name="screen_button_enabled_message">手機螢幕下方按鍵功能已恢復</string>
++    <string name="settings_statusbar_style">狀態欄風格設置</string>
++    <string name="center_clock_title">時間居中顯示</string>
++    <string name="center_clock_title_summary">開啟後點擊狀態欄左上角返回主頁，右上角鎖屏</string>
+ </resources>
+--- a/MiuiSystemUI/res/values/strings.xml
++++ b/MiuiSystemUI/res/values/strings.xml
+@@ -320,4 +320,7 @@
+     <string name="screen_button_disabled_message">Navigation buttons disabled. To re-enable them, touch Home and the Power button simultaneously.</string>
+     <string name="screen_button_enabled_message">Navigation buttons enabled.</string>
+     <item type="string" name="APKTOOL_DUMMY_013b">false</item>
+-</resources>
++    <string name="settings_statusbar_style">Statusbar Style Settings</string>
++    <string name="center_clock_title">Centered Clock</string>
++    <string name="center_clock_title_summary">After the opening of the upper left corner to return home, the upper right corner of the status bar lock screen</string>
++ </resources>
+--- a/MiuiSystemUI/res/xml/style_settings.xml
++++ b/MiuiSystemUI/res/xml/style_settings.xml
+@@ -17,4 +17,7 @@
+             <intent android:targetPackage="com.android.systemui" android:action="android.intent.action.MAIN" android:targetClass="com.android.systemui.settings.AdvancedSettings" />
+         </PreferenceScreen>
+     </PreferenceCategory>
++    <PreferenceCategory android:title="@string/settings_statusbar_style">
++        <CheckBoxPreference android:persistent="false" android:title="@string/center_clock_title" android:key="center_clock" android:summary="@string/center_clock_title_summary" />
++    </PreferenceCategory>
+ </PreferenceScreen>
+\ No newline at end of file
+--- a/MiuiSystemUI/smali/com/android/systemui/settings/StyleSettings.smali
++++ b/MiuiSystemUI/smali/com/android/systemui/settings/StyleSettings.smali
+@@ -7,12 +7,16 @@
+ 
+ 
+ # instance fields
++.field private mCenterClock:Landroid/preference/CheckBoxPreference;
++
+ .field private mProgressDialog:Landroid/app/ProgressDialog;
+ 
+ .field private mShowFlowInfo:Landroid/preference/CheckBoxPreference;
+ 
+ .field private mShowNetworkSpeed:Landroid/preference/CheckBoxPreference;
+ 
++.field private mUIDefine:Landroid/content/SharedPreferences;
++
+ .field private mWindowLoadedObserver:Landroid/database/ContentObserver;
+ 
+ 
+@@ -46,10 +50,74 @@
+     return-object v0
+ .end method
+ 
++.method private updateCenterClockPreference(Ljava/lang/Object;)V
++    .locals 6
++    .parameter "newValue"
++
++    .prologue
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mUIDefine:Landroid/content/SharedPreferences;
++
++    invoke-interface {v3}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
++
++    move-result-object v1
++
++    .local v1, editor:Landroid/content/SharedPreferences$Editor;
++    check-cast p1, Ljava/lang/Boolean;
++
++    .end local p1
++    invoke-virtual {p1}, Ljava/lang/Boolean;->booleanValue()Z
++
++    move-result v0
++
++    .local v0, bl:Z
++    const-string v3, "StyleSettings"
++
++    new-instance v4, Ljava/lang/StringBuilder;
++
++    const-string v5, "current obj value is "
++
++    invoke-direct {v4, v5}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v4
++
++    invoke-static {v3, v4}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
++
++    const-string v3, "center_clock"
++
++    invoke-interface {v1, v3, v0}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
++
++    invoke-interface {v1}, Landroid/content/SharedPreferences$Editor;->commit()Z
++
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mCenterClock:Landroid/preference/CheckBoxPreference;
++
++    invoke-virtual {v3, v0}, Landroid/preference/CheckBoxPreference;->setChecked(Z)V
++
++    new-instance v2, Landroid/content/Intent;
++
++    const-string v3, "com.miui.app.ExtraStatusBarManager.REQUEST_RESTART"
++
++    invoke-direct {v2, v3}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
++
++    .local v2, localIntent:Landroid/content/Intent;
++    invoke-virtual {p0, v2}, Lcom/android/systemui/settings/StyleSettings;->sendBroadcast(Landroid/content/Intent;)V
++
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mProgressDialog:Landroid/app/ProgressDialog;
++
++    invoke-virtual {v3}, Landroid/app/ProgressDialog;->show()V
++
++    return-void
++.end method
++
+ 
+ # virtual methods
+ .method protected onCreate(Landroid/os/Bundle;)V
+-    .locals 4
++    .locals 6
+     .parameter "savedInstanceState"
+ 
+     .prologue
+@@ -139,6 +207,43 @@
+ 
+     invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
+ 
++    const/4 v5, 0x0
++
++    const-string v3, "ui_define"
++
++    invoke-virtual {p0, v3, v5}, Lcom/android/systemui/settings/StyleSettings;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
++
++    move-result-object v3
++
++    iput-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mUIDefine:Landroid/content/SharedPreferences;
++
++    const-string v3, "center_clock"
++
++    invoke-virtual {p0, v3}, Lcom/android/systemui/settings/StyleSettings;->findPreference(Ljava/lang/CharSequence;)Landroid/preference/Preference;
++
++    move-result-object v3
++
++    check-cast v3, Landroid/preference/CheckBoxPreference;
++
++    iput-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mCenterClock:Landroid/preference/CheckBoxPreference;
++
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mUIDefine:Landroid/content/SharedPreferences;
++
++    const-string v4, "center_clock"
++
++    invoke-interface {v3, v4, v5}, Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z
++
++    move-result v0
++
++    .local v0, currentCenterClock:Z
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mCenterClock:Landroid/preference/CheckBoxPreference;
++
++    invoke-virtual {v3, v0}, Landroid/preference/CheckBoxPreference;->setChecked(Z)V
++
++    iget-object v3, p0, Lcom/android/systemui/settings/StyleSettings;->mCenterClock:Landroid/preference/CheckBoxPreference;
++
++    invoke-virtual {v3, p0}, Landroid/preference/CheckBoxPreference;->setOnPreferenceChangeListener(Landroid/preference/Preference$OnPreferenceChangeListener;)V
++
+     return-void
+ .end method
+ 
+@@ -228,7 +333,7 @@
+ 
+     move-result v1
+ 
+-    if-eqz v1, :cond_0
++    if-eqz v1, :cond_3
+ 
+     check-cast p2, Ljava/lang/Boolean;
+ 
+@@ -239,6 +344,17 @@
+ 
+     invoke-static {p0, v1}, Lmiui/app/ExtraStatusBarManager;->setShowNetworkSpeed(Landroid/content/Context;Z)V
+ 
++    :cond_3
++    const-string v1, "center_clock"
++
++    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v1
++
++    if-eqz v1, :cond_0
++
++    invoke-direct {p0, p2}, Lcom/android/systemui/settings/StyleSettings;->updateCenterClockPreference(Ljava/lang/Object;)V
++
+     goto :goto_0
+ .end method
+ 
+--- a/MiuiSystemUI/smali/com/android/systemui/statusbar/phone/PhoneStatusBar.smali
++++ b/MiuiSystemUI/smali/com/android/systemui/statusbar/phone/PhoneStatusBar.smali
+@@ -358,6 +358,8 @@
+ 
+ .field mTrackingPosition:I
+ 
++.field private mUIDefine:Landroid/content/SharedPreferences;
++
+ .field private mUsbNotification:Lcom/android/systemui/statusbar/UsbNotificationView;
+ 
+ .field mVelocityTracker:Landroid/view/VelocityTracker;
+@@ -2139,6 +2141,78 @@
+     return-object v0
+ .end method
+ 
++.method private getStatusBarStyleId()I
++    .locals 5
++
++    .prologue
++    const/4 v4, 0x0
++
++    iget-object v2, p0, Lcom/android/systemui/statusbar/phone/PhoneStatusBar;->mContext:Landroid/content/Context;
++
++    const-string v3, "ui_define"
++
++    invoke-virtual {v2, v3, v4}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
++
++    move-result-object v2
++
++    iput-object v2, p0, Lcom/android/systemui/statusbar/phone/PhoneStatusBar;->mUIDefine:Landroid/content/SharedPreferences;
++
++    iget-object v2, p0, Lcom/android/systemui/statusbar/phone/PhoneStatusBar;->mUIDefine:Landroid/content/SharedPreferences;
++
++    const-string v3, "center_clock"
++
++    invoke-interface {v2, v3, v4}, Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z
++
++    move-result v0
++
++    .local v0, bl:Z
++    const-string v2, "PhoneStatusBar"
++
++    new-instance v3, Ljava/lang/StringBuilder;
++
++    const-string v4, "currentStyleSet:"
++
++    invoke-direct {v3, v4}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++
++    move-result-object v3
++
++    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v3
++
++    invoke-static {v2, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
++
++    const v1, 0x7f030024
++
++    .local v1, resId:I
++    if-eqz v0, :cond_0
++
++    const v1, 0x7f030037
++
++    :cond_0
++    const-string v2, "PhoneStatusBar"
++
++    new-instance v3, Ljava/lang/StringBuilder;
++
++    const-string v4, "StyleId is "
++
++    invoke-direct {v3, v4}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    move-result-object v3
++
++    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v3
++
++    invoke-static {v2, v3}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
++
++    return v1
++.end method
++
+ .method private getTabIndicatorPosition(I)I
+     .locals 5
+     .parameter "tabIndex"
+@@ -8267,7 +8341,9 @@
+ 
+     iput v0, p0, Lcom/android/systemui/statusbar/phone/PhoneStatusBar;->mIconSize:I
+ 
+-    const v0, 0x7f030024
++    invoke-direct {p0}, Lcom/android/systemui/statusbar/phone/PhoneStatusBar;->getStatusBarStyleId()I
++
++    move-result v0
+ 
+     invoke-static {v4, v0, v9}, Landroid/view/View;->inflate(Landroid/content/Context;ILandroid/view/ViewGroup;)Landroid/view/View;
+ 
+-- 
+1.9.1
+
+
